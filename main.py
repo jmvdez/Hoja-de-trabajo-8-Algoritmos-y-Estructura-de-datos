@@ -1,18 +1,25 @@
-class Node:
+class BSTNode:
     def __init__(self, key):
         self.key = key
+        self.left = None
+        self.right = None
 
 
 class BST:
     def __init__(self):
         self.root = None
 
+    def search(self, key):
+        current = self.root
+        iterations = 0
 
-class SplayTree:
-    def __init__(self):
-        self.root = None
+        while current:
+            iterations += 1
+            if key == current.key:
+                return current, iterations
+            elif key < current.key:
+                current = current.left
+            else:
+                current = current.right
 
-
-class RedBlackTree:
-    def __init__(self):
-        self.root = None
+        return None, iterations
