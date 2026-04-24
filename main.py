@@ -264,12 +264,52 @@ def escenario_B():
 
     return bst_it, splay_it, rb_it
 
+# ESCENARIO C
+def escenario_C():
+    splay, rb = SplayTree(), RedBlackTree()
+
+    values = [random.randint(1, 10000) for _ in range(1000)]
+
+    for v in values:
+        splay.insert(v)
+        rb.insert(v)
+
+    target = values[0]  # mismo proceso
+
+    splay_iter = []
+    rb_iter = []
+
+    for _ in range(50):
+        splay_iter.append(splay.search(target)[1])
+        rb_iter.append(rb.search(target)[1])
+
+    # Promedios
+    avg_splay = sum(splay_iter) / 50
+    avg_rb = sum(rb_iter) / 50
+
+    return avg_splay, avg_rb, splay_iter, rb_iter
+
 # GRAFICA
 def graficar(resultados):
     nombres = ["BST", "Splay", "RB"]
     plt.bar(nombres, resultados)
     plt.title("Escenario A - Comparación de Iteraciones")
     plt.ylabel("Iteraciones Promedio")
+    plt.show()
+
+def graficar_C(splay_iter, rb_iter):
+    x = list(range(1, 51))
+
+    plt.figure(figsize=(10,5))
+
+    plt.plot(x, splay_iter, label="Splay Tree")
+    plt.plot(x, rb_iter, label="Red-Black Tree")
+
+    plt.xlabel("Número de búsqueda")
+    plt.ylabel("Iteraciones")
+    plt.title("Escenario C - Búsqueda repetida")
+    plt.legend()
+
     plt.show()
 
 # MAIN
@@ -286,3 +326,11 @@ if __name__ == "__main__":
     print("BST:", B[0])
     print("Splay:", B[1])
     print("RB:", B[2])
+    
+    print("\n----- ESCENARIO C -----")
+    C = escenario_C()
+
+    print("Splay promedio:", C[0])
+    print("RB promedio:", C[1])
+
+    graficar_C(C[2], C[3])
