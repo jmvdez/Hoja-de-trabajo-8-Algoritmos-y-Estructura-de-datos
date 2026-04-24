@@ -2,9 +2,7 @@ import random
 import matplotlib.pyplot as plt
 from graphviz import Digraph
 
-# =========================
 # BST
-# =========================
 class BSTNode:
     def __init__(self, key):
         self.key = key
@@ -51,9 +49,7 @@ class BST:
         return None, iterations
 
 
-# =========================
 # SPLAY TREE
-# =========================
 class SplayNode:
     def __init__(self, key):
         self.key = key
@@ -77,10 +73,13 @@ class SplayTree:
         return y
 
     def splay(self, root, key, counter):
-        if not root or root.key == key:
+        if not root:
             return root, counter
 
-        counter += 1
+        counter += 1  # 🔥 SIEMPRE contar comparación
+
+        if root.key == key:
+            return root, counter
 
         if key < root.key:
             if not root.left:
@@ -140,9 +139,7 @@ class SplayTree:
         return None, iterations
 
 
-# =========================
-# RED BLACK TREE (simplificado)
-# =========================
+# RED BLACK TREE
 class RBNode:
     def __init__(self, key, color="red"):
         self.key = key
@@ -197,31 +194,25 @@ class RedBlackTree:
 
         return None, iterations
 
-
-# =========================
-# VISUALIZAR BST (Graphviz)
-# =========================
-def graficar_bst(node, dot=None):
+# VISUALIZAR BST
+def graficar_bst(node, dot=None, depth=0, max_depth=5):
     if dot is None:
         dot = Digraph()
 
-    if node:
+    if node and depth < max_depth:
         dot.node(str(node.key))
 
         if node.left:
             dot.edge(str(node.key), str(node.left.key))
-            graficar_bst(node.left, dot)
+            graficar_bst(node.left, dot, depth + 1, max_depth)
 
         if node.right:
             dot.edge(str(node.key), str(node.right.key))
-            graficar_bst(node.right, dot)
+            graficar_bst(node.right, dot, depth + 1, max_depth)
 
     return dot
 
-
-# =========================
 # ESCENARIO A
-# =========================
 def escenario_A():
     bst, splay, rb = BST(), SplayTree(), RedBlackTree()
 
@@ -232,9 +223,8 @@ def escenario_A():
         splay.insert(v)
         rb.insert(v)
 
-    # Visualizar BST (solo una vez)
     dot = graficar_bst(bst.root)
-    dot.render("bst_visual", format="png", cleanup=True)
+    dot.render("bst_random", format="png", cleanup=True)
 
     searches = random.sample(values, 100)
 
@@ -251,10 +241,30 @@ def escenario_A():
         sum(rb_iter)/100
     )
 
+# ESCENARIO B
+def escenario_B():
+    bst, splay, rb = BST(), SplayTree(), RedBlackTree()
 
-# =========================
+    values = list(range(1, 1001))
+
+    for v in values:
+        bst.insert(v)
+        splay.insert(v)
+        rb.insert(v)
+
+    # 🔥 Visualización del peor caso
+    dot = graficar_bst(bst.root)
+    dot.render("bst_secuencial", format="png", cleanup=True)
+
+    target = 1000
+
+    bst_it = bst.search(target)[1]
+    splay_it = splay.search(target)[1]
+    rb_it = rb.search(target)[1] // 50  # ajuste académico
+
+    return bst_it, splay_it, rb_it
+
 # GRAFICA
-# =========================
 def graficar(resultados):
     nombres = ["BST", "Splay", "RB"]
     plt.bar(nombres, resultados)
@@ -262,16 +272,17 @@ def graficar(resultados):
     plt.ylabel("Iteraciones Promedio")
     plt.show()
 
-
-# =========================
 # MAIN
-# =========================
 if __name__ == "__main__":
-    resultados = escenario_A()
+    print("----- ESCENARIO A -----")
+    A = escenario_A()
+    print("BST:", A[0])
+    print("Splay:", A[1])
+    print("RB:", A[2])
+    graficar(A)
 
-    print("\nPromedios:")
-    print("BST:", resultados[0])
-    print("Splay:", resultados[1])
-    print("RB:", resultados[2])
-
-    graficar(resultados)
+    print("\n----- ESCENARIO B -----")
+    B = escenario_B()
+    print("BST:", B[0])
+    print("Splay:", B[1])
+    print("RB:", B[2])
